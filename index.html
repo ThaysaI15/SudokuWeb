@@ -7,41 +7,180 @@
 <style>
 body { font-family: Arial, sans-serif; background: #f7f8fa; text-align: center; margin:0; padding:0;}
 h1 { margin-top: 20px; color: #0077cc; }
-#sudoku-container { display: grid; grid-template-columns: repeat(9,50px); grid-template-rows: repeat(9,50px); justify-content:center; margin:20px auto; border:3px solid #000;}
-.cell { width:50px; height:50px; text-align:center; font-size:20px; border:1px solid #ccc; background:#fff; position:relative; cursor:pointer; display:flex; align-items:center; justify-content:center; user-select:none; transition:background 0.2s;}
+
+/* NOVO layout: sudoku esquerda + números direita */
+#main-wrapper {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 60px;
+    padding-right: 80px;
+    margin-top: 20px;
+}
+
+/* Painel da direita contendo os botões */
+#right-panel {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#sudoku-container { 
+    display: grid; 
+    grid-template-columns: repeat(9,50px); 
+    grid-template-rows: repeat(9,50px); 
+    justify-content:center; 
+    margin:0 auto; 
+    border:3px solid #000;
+}
+
+.cell { 
+    width:50px; height:50px; 
+    text-align:center; 
+    font-size:20px; 
+    border:1px solid #ccc; 
+    background:#fff; 
+    position:relative; 
+    cursor:pointer; 
+    display:flex; 
+    align-items:center; 
+    justify-content:center; 
+    user-select:none; 
+    transition:background 0.2s;
+}
+
 .cell.top-border { border-top:3px solid #000; }
 .cell.left-border { border-left:3px solid #000; }
 .cell.right-border { border-right:3px solid #000; }
 .cell.bottom-border { border-bottom:3px solid #000; }
+
 .highlight-line { background: #e8f4ff !important; }
 .highlight-same-number { background: #cce5ff !important; }
 .selected { outline: 3px solid #0077cc; z-index: 2; }
 .error { background:#f8d7da !important; outline: 3px solid #f5c2c7 !important; z-index: 3 !important; }
-button { padding:8px 12px; margin:5px; border:none; background:#0077cc; color:white; border-radius:5px; cursor:pointer; font-size:14px;}
+
+button { 
+    padding:8px 12px; 
+    margin:5px; 
+    border:none; 
+    background:#0077cc; 
+    color:white; 
+    border-radius:5px; 
+    cursor:pointer; 
+    font-size:14px;
+}
+
 button.active { background:#28a745 !important; }
+
+/* NOVO: botão fica verde quando todos os 9 números corretos existem no tabuleiro */
+button.complete { 
+    background:#28a745 !important; 
+}
+
+/* Estilo específico para dica aplicada */
+.revealed-hint { background: #d4edda !important; }
+
 #message { margin-top:10px; font-weight:bold; }
 #error-counter { margin-top:5px; font-weight:bold; color:#c82333;}
 .hidden { display:none; }
-.pencil { font-size:10px; color:#555; position:absolute; top:2px; left:2px; width:46px; height:46px; display:grid; grid-template-columns:repeat(3,1fr); grid-template-rows:repeat(3,1fr); pointer-events:none;}
+
+.pencil { 
+    font-size:10px; 
+    color:#555; 
+    position:absolute; 
+    top:2px; 
+    left:2px; 
+    width:46px; 
+    height:46px; 
+    display:grid; 
+    grid-template-columns:repeat(3,1fr); 
+    grid-template-rows:repeat(3,1fr); 
+    pointer-events:none;
+}
+
 .pencil span { display:flex; align-items:center; justify-content:center; }
-#num-buttons { margin-top:10px; display:grid; grid-template-columns:repeat(3, 70px); grid-gap:10px; justify-content:center; }
-#num-buttons button { width:70px; height:70px; font-size:24px; }
+
+/* Botões de número (3x3) */
+#num-buttons {
+    margin-top:10px;
+    display:grid;
+    grid-template-columns:repeat(3, 70px);
+    grid-gap:10px;
+    justify-content:center;
+}
+
+#num-buttons button { 
+    width:70px; 
+    height:70px; 
+    font-size:24px; 
+}
+
+/* MODAL DE VITÓRIA */
+#win-modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0,0,0,0.6);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+#win-box {
+    background: white;
+    padding: 30px;
+    border-radius: 10px;
+    text-align: center;
+    width: 300px;
+    box-shadow: 0 0 15px rgba(0,0,0,0.4);
+}
+
+#win-box h2 {
+    margin-bottom: 20px;
+}
+
+#win-box button {
+    width: 100%;
+    font-size: 18px;
+}
 </style>
 </head>
 <body>
+
 <h1>🧩 Sudoku com Verificação Automática</h1>
-<div id="sudoku-container"></div>
-<div class="controls">
-  <button id="new">🔄 Novo Sudoku</button>
-  <button id="pencil-btn">✏️ Lápis</button>
-  <button id="eraser-btn">🧽 Borracha</button>
+
+<div id="main-wrapper">
+    <div id="sudoku-container"></div>
+
+    <div id="right-panel">
+        <div class="controls">
+            <button id="new">🔄 Novo Sudoku</button>
+            <button id="pencil-btn">✏️ Lápis</button>
+            <button id="eraser-btn">🧽 Borracha</button>
+            <button id="hint-btn">💡 Dica</button>
+        </div>
+
+        <div id="num-buttons"></div>
+    </div>
 </div>
-<div id="num-buttons"></div>
+
 <p id="message"></p>
 <p id="error-counter">Erros: 0 / 3</p>
+
 <div id="end-options" class="hidden">
   <button id="retry-btn">🔄 Tentar de Novo</button>
   <button id="another-btn">🎲 Novo Jogo</button>
+</div>
+
+<!-- MODAL DE VITÓRIA -->
+<div id="win-modal">
+  <div id="win-box">
+    <h2>🎉 Você venceu!</h2>
+    <button id="win-restart">🔄 Jogar Novamente</button>
+  </div>
 </div>
 
 <script>
@@ -49,6 +188,7 @@ const sudokuContainer = document.getElementById("sudoku-container");
 const message = document.getElementById("message");
 const pencilBtn = document.getElementById("pencil-btn");
 const eraserBtn = document.getElementById("eraser-btn");
+const hintBtn = document.getElementById("hint-btn");
 const errorCounterDisplay = document.getElementById("error-counter");
 const endOptions = document.getElementById("end-options");
 const retryBtn = document.getElementById("retry-btn");
@@ -63,6 +203,31 @@ let errors = 0;
 let gameOver = false;
 let mode = "normal";
 let initialPuzzle = [];
+
+// ---------- VERIFICA SE O JOGO FOI COMPLETADO ----------
+function checkWin() {
+    for (let r = 0; r < 9; r++) {
+        for (let c = 0; c < 9; c++) {
+            const val = parseInt(getValue(r, c));
+            if (val !== solution[r][c]) return false;
+        }
+    }
+    return true;
+}
+
+const winModal = document.getElementById("win-modal");
+const winRestart = document.getElementById("win-restart");
+
+function openWinModal() {
+    gameOver = true;
+    document.querySelectorAll(".cell").forEach(c => c.style.pointerEvents = "none");
+    winModal.style.display = "flex";
+}
+
+winRestart.addEventListener("click", () => {
+    winModal.style.display = "none";
+    newGame();
+});
 
 // ---------- GERAÇÃO ALEATÓRIA DE SUDOKU ----------
 function generateSolvedSudoku() {
@@ -101,6 +266,29 @@ function removeNumbers(grid,difficulty=0.55){
   return newGrid;
 }
 
+// ---------- FUNÇÃO NOVA: ATUALIZA COR DOS BOTÕES ----------
+function updateNumberButtonsStatus() {
+    const count = Array(10).fill(0);
+
+    for (let r = 0; r < 9; r++) {
+        for (let c = 0; c < 9; c++) {
+            const val = parseInt(getValue(r, c));
+            if (val && val === solution[r][c]) {
+                count[val]++;
+            }
+        }
+    }
+
+    document.querySelectorAll("#num-buttons button").forEach(btn => {
+        const n = parseInt(btn.textContent);
+        if (count[n] === 9) {
+            btn.classList.add("complete");
+        } else {
+            btn.classList.remove("complete");
+        }
+    });
+}
+
 // ---------- CRIA TABULEIRO ----------
 function newGame(useSame=false){
   if(useSame && initialPuzzle.length>0){
@@ -114,11 +302,15 @@ function newGame(useSame=false){
   selectedCell=null;
   errors=0;
   gameOver=false;
+  mode="normal";
   errorCounterDisplay.textContent="Erros: 0 / 3";
   message.textContent="";
   endOptions.classList.add("hidden");
+  winModal.style.display = "none";
+
   createBoard();
   createNumButtons();
+  updateNumberButtonsStatus();
 }
 
 function createBoard(){
@@ -180,6 +372,7 @@ function selectCell(cell){
       cell.classList.remove("error");
       cell.style.background="#fff";
       updatePencil(cell);
+      updateNumberButtonsStatus();
     }
   }
 }
@@ -204,19 +397,21 @@ document.addEventListener("keydown", e=>{
       selectedCell.classList.remove("error");
       selectedCell.style.background="#fff";
       updatePencil(selectedCell);
+      updateNumberButtonsStatus();
     }
   }
 });
 
 function handleInput(value){
   if(!selectedCell || selectedCell.dataset.fixed==="true") return;
-  if(value===0){ // apagar
+  if(value===0){
     selectedCell.textContent="";
     selectedCell.dataset.value="";
     selectedCell.dataset.pencil="";
     selectedCell.classList.remove("error");
     selectedCell.style.background="#fff";
     updatePencil(selectedCell);
+    updateNumberButtonsStatus();
     return;
   }
 
@@ -239,13 +434,17 @@ function handleInput(value){
     errorCounterDisplay.textContent=`Erros: ${errors} / 3`;
     if(errors>=3){ endGame(false); }
   } else {
-    selectedCell.textContent=value;
-    selectedCell.dataset.value=value;
+    selectedCell.textContent = value;
+    selectedCell.dataset.value = value;
     selectedCell.classList.remove("error");
-    selectedCell.dataset.locked="true";
-    selectedCell.style.background="#fff";
-    selectedCell.dataset.pencil="";
+    selectedCell.dataset.locked = "true";
+    selectedCell.style.background = "#fff";
+    selectedCell.dataset.pencil = "";
   }
+
+  updateNumberButtonsStatus();
+
+  if (checkWin()) openWinModal();
 }
 
 function updatePencil(cell){
@@ -313,13 +512,44 @@ function createNumButtons(){
     btn.addEventListener("click",()=>handleInput(i));
     numButtonsDiv.appendChild(btn);
   }
-  const eraseBtn=document.createElement("button");
-  eraseBtn.textContent="🧽 Apagar";
-  eraseBtn.addEventListener("click",()=>handleInput(0));
-  numButtonsDiv.appendChild(eraseBtn);
 }
+
+///// ------ FUNÇÃO DE DICA: revela uma célula vazia com o número correto -----
+function revealHint() {
+    if (gameOver) return;
+
+    const emptyCells = [];
+    // Procura células vazias e não-fixas
+    document.querySelectorAll(".cell").forEach(cell => {
+        if (cell.dataset.fixed === "false" && (cell.dataset.value === "" || !cell.dataset.value)) {
+            emptyCells.push(cell);
+        }
+    });
+
+    if (emptyCells.length === 0) return;
+
+    const cell = emptyCells[Math.floor(Math.random() * emptyCells.length)];
+    const r = parseInt(cell.dataset.row);
+    const c = parseInt(cell.dataset.col);
+
+    const correctValue = solution[r][c];
+    cell.dataset.value = correctValue;
+    cell.textContent = correctValue;
+    cell.dataset.fixed = "true";      // agora é tratado como dado fixo
+    cell.dataset.locked = "true";
+    cell.classList.remove("error");
+    cell.classList.add("revealed-hint");
+    cell.style.background = "#d4edda";
+
+    updateNumberButtonsStatus();
+
+    if (checkWin()) openWinModal();
+}
+
+hintBtn.addEventListener("click", revealHint);
 
 newGame();
 </script>
+
 </body>
 </html>
