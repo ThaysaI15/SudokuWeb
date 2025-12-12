@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sudoku com Verificação, Pontos e Cronômetro</title>
+<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+
+<h1>🧩 Sudoku com Pontuação e Cronômetro</h1>
+
+<!-- Display de Pontos e Tempo -->
+<p id="score-display">Pontuação: 0</p>
+<p id="timer-display">Tempo: 00:00</p>
+
+<div id="main-wrapper">
+    <div id="sudoku-container"></div>
+
+    <div id="right-panel">
+        <div class="controls">
+            <button id="new">🔄 Novo Sudoku</button>
+            <button id="pencil-btn">✏️ Lápis</button>
+            <button id="eraser-btn">🧽 Borracha</button>
+            <button id="hint-btn">💡 Dica</button>
+        </div>
+
+        <div id="num-buttons"></div>
+    </div>
+</div>
+
+<p id="message"></p>
+<p id="error-counter">Erros: 0 / 3</p>
+
+<div id="end-options" class="hidden">
+  <button id="retry-btn">🔄 Tentar de Novo</button>
+  <button id="another-btn">🎲 Novo Jogo</button>
+</div>
+
+<!-- MODAL DE VITÓRIA -->
+<div id="win-modal">
+  <div id="win-box">
+    <h2>🎉 Você venceu!</h2>
+    <p id="win-score"></p>
+    <p id="win-time"></p>
+    <button id="win-restart">🔄 Jogar Novamente</button>
+  </div>
+</div>
+
+<script src="script.js"></script>
+
+</body>
+</html>
